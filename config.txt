@@ -1,0 +1,55 @@
+# WIFI名称;
+WIFISSID="ps5_umtx2_zerofo"; 
+
+# WIFI密码;
+WIFIPass="";
+
+# 仅支持输入 8266 8266sd esp32-s2 esp32-s3 esp32-old 这4个 名字. ;
+Devs="8266 8266sd esp32-s2 esp32-c6 esp32-s3 esp32-old"; 
+#Devs="esp32-s2";
+
+# 网站 IP;
+IP="9.9.9.9"; 
+
+# 输出文件名, 不能有空格;
+binname="ps5_umtx2_zerofo"; 
+
+# 是否压缩;
+compress="y";
+
+# compress 为Y时生效, 排除压缩文件/格式 以空格区分;
+blockList="ps5-kstuff.bin etaHEN.bin goldhen.bin"; 
+
+# compress 为N 时生效, 指定压缩文件/格式 以空格区分;
+compress_List="ps5-kstuff.bin .css"; 
+
+# 可选择 4MB 8MB 16MB ,8266可以塞下N-1MB大小, esp32 可以塞下 N-1.5MB 左右大小.
+flashSize="4MB 8MB 16MB";
+
+# 适用于本人网站的配置.
+ZerofoSet="y"; 
+
+# 无https 无证书确认.;
+Ps4_Only="y"; 
+
+# ex."ps4/exploit.js". 需要处理的文件, 将添加 "//esp32-add " 开头的注解, 删除 "//esp32-del" 结尾的行;
+ps4_900_kex=""; 
+
+#限制ESP可连接设备数量
+clientNUM=1
+
+#是否隐藏WIFI
+hideSSID=0
+
+#WIFI信号的信道
+channel=4
+
+#WIFI配置页面  目前默认 IP/.zerofo_espcfg
+WIFIcfg="y";
+
+#需要开启 WIFI配置页面,否则无效.  默认关闭, 在页面WIFI配置开启.
+DEEPSLEEP_cfg="y";
+
+# 可以上网找找docker的代理, 由于旧的经常被封, 这边开放设置....  如: dockerproxy.cn dockerproxy.net 
+#  https://www.cnblogs.com/Chary/p/18499889 这里有些还能用
+DockerProxy="";

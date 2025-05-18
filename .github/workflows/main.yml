@@ -1,0 +1,64 @@
+name: Container Process with Artifacts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  container-process:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 步骤 1：检出主仓库到默认位置
+    - name: Checkout main repo
+      uses: actions/checkout@v4
+
+    # 步骤 2：检出另一个仓库到 tmp_data 目录
+    - name: Checkout secondary repo
+      uses: actions/checkout@v4
+      with:
+        repository: idlesauce/umtx2  # 目标仓库的完整名称
+        path: tmp              # 指定检出到 tmp_data 目录
+      # token: ${{ secrets.ACCESS_TOKEN }}  # 需要仓库访问权限的 token
+    - name: zip download
+      id: getzip
+      run: |
+        echo "zipurl=''" >> $GITHUB_OUTPUT
+        # echo "zipurl=http://github.com/zerofo/psesp_action/releases/test/test.zip" >> $GITHUB_OUTPUT
+    - name: getindex
+      id: indexPath
+      run: |
+        echo "indexPath=document/en/ps5" >> $GITHUB_OUTPUT
+
+    # 步骤 3：创建必要目录结构
+    - name: Prepare directories
+      run: |
+        mkdir -p output 
+        chmod -R a+rwx output
+        if [[ ${{ steps.getzip.outputs.zipurl }} != "" ]]; then
+            wget ${{ steps.getzip.outputs.zipurl }} -O source.zip
+            unzip source.zip -d tmpzip;
+        fi
+    # 步骤 4：运行容器处理数据
+    - name: Run container process
+      run: |
+        docker pull zerofo/builder_esp:web_p
+        if [[ -d tmpzip ]];then
+          mv tmpzip tmp_data
+        elif [[ ${{ steps.indexPath.outputs.indexPath }} != "" ]]; then
+          mv tmp/${{ steps.indexPath.outputs.indexPath }} tmp_data
+        else
+          mv tmp tmp_data
+        fi
+        docker run -i --name psesp_action -v ${{ github.workspace }}/output:/output -v ${{ github.workspace }}/config.txt:/config.txt -v ${{ github.workspace }}/tmp_data/:/Srchost zerofo/builder_esp:web_p > log
+        
+        docker logs psesp_action
+       
+    # 步骤 5：上传处理结果
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: esp_output
+        path: |
+          output/*.zip
+          !output/*.tmp  # 排除临时文件
+        retention-days: 3
