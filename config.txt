@@ -1,5 +1,5 @@
 # WIFI名称;
-WIFISSID="ps5_umtx2_zerofo"; 
+WIFISSID="ps4_672_zerofo"; 
 
 # WIFI密码;
 WIFIPass="";
@@ -12,7 +12,7 @@ Devs="8266 8266sd esp32-s2 esp32-c6 esp32-s3 esp32-old";
 IP="9.9.9.9"; 
 
 # 输出文件名, 不能有空格;
-binname="ps5_umtx2_zerofo"; 
+binname="ps4_672_zerofo"; 
 
 # 是否压缩;
 compress="y";
