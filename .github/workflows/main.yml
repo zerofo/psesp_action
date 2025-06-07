@@ -26,7 +26,7 @@ jobs:
         # echo "zipurl=http://github.com/zerofo/psesp_action/releases/test/test.zip" >> $GITHUB_OUTPUT
     - name: getindex
       id: indexPath
-      run: echo "indexPath=./" >> $GITHUB_OUTPUT
+      run: echo "indexPath=''" >> $GITHUB_OUTPUT
       #run: echo "indexPath=document/en/ps5" >> $GITHUB_OUTPUT
 
     # 步骤 3：创建必要目录结构
