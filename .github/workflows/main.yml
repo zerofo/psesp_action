@@ -27,7 +27,7 @@ jobs:
     - name: getindex
       id: indexPath
       run: |
-        echo "./" >> $GITHUB_OUTPUT
+        echo './' >> $GITHUB_OUTPUT
 
     # 步骤 3：创建必要目录结构
     - name: Prepare directories
