@@ -54,34 +54,34 @@ jobs:
         
         docker logs psesp_action
     - name: Upload output directory
-        uses: actions/upload-artifact@v4
-        with:
-          name: output-files
-          path: output
+      uses: actions/upload-artifact@v4
+      with:
+        name: output-files
+        path: output
           
-      - name: Get file list with basenames
-        id: files
-        run: |
-          # 创建一个包含文件路径和文件名的JSON数组
-          arr=()
-          find output -type f | while IFS= read -r file; do
-            filename=$(basename "$file")
-            arr+=("{\"file_path\":\"$file\",\"file_name\":\"$filename\"}")
-          done
+    - name: Get file list with basenames
+      id: files
+      run: |
+        # 创建一个包含文件路径和文件名的JSON数组
+        arr=()
+        find output -type f | while IFS= read -r file; do
+          filename=$(basename "$file")
+          arr+=("{\"file_path\":\"$file\",\"file_name\":\"$filename\"}")
+        done
+        
+        # 转换为JSON数组
+        json_array="["
+        for obj in "${arr[@]}"; do
+          json_array+="$obj,"
+        done
+        json_array="${json_array%,}]"
+        
+        echo "file_list=$json_array" >> $GITHUB_OUTPUT
           
-          # 转换为JSON数组
-          json_array="["
-          for obj in "${arr[@]}"; do
-            json_array+="$obj,"
-          done
-          json_array="${json_array%,}]"
-          
-          echo "file_list=$json_array" >> $GITHUB_OUTPUT
-          
-      - name: Set matrix
-        id: set-matrix
-        run: |
-          echo "matrix=${{ steps.files.outputs.file_list }}" >> $GITHUB_OUTPUT
+    - name: Set matrix
+      id: set-matrix
+      run: |
+        echo "matrix=${{ steps.files.outputs.file_list }}" >> $GITHUB_OUTPUT
   upload:
     needs: container-process
     runs-on: ubuntu-latest
