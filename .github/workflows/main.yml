@@ -52,20 +52,36 @@ jobs:
         docker run -i --name psesp_action -v ${{ github.workspace }}/output:/output -v ${{ github.workspace }}/config.txt:/config.txt -v ${{ github.workspace }}/tmp_data/:/Srchost zerofo/builder_esp:web_p > log
         
         docker logs psesp_action
-    - name: Upload individual artifacts
+    - name: Get file list
+      id: files
       run: |
-        cd output
-        for file in *; do
-          artifact_name="${file}"
-          echo "Uploading $artifact_name"
-          gh_artifact_name=$(echo "$artifact_name" | tr '/' '-')
-          echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
-        done
-      id: file_upload
-      shell: bash
+        find output -type f | jq -R -s 'split("\n") | map(select(. != ""))' > files.json
+        echo "files=$(cat files.json)" >> $GITHUB_OUTPUT
+          
+    - name: Set matrix
+      id: set-matrix
+      run: |
+        echo "matrix={\"file\":${{ steps.files.outputs.files }}}" >> $GITHUB_OUTPUT
         
     - name: Upload each file
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.file_upload.outputs.artifact_name }}
         path: output/${{ steps.file_upload.outputs.artifact_name }}
+  upload:
+    needs: container-process
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.container-process.outputs.matrix) }}
+    steps:
+      - name: Download output files
+        uses: actions/download-artifact@v4
+        with:
+          name: output-files
+          path: output
+          
+      - name: Upload single file
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.file | basename }}
+          path: ${{ matrix.file }}
