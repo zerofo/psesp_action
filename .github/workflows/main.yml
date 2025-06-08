@@ -6,7 +6,8 @@ on:
 jobs:
   container-process:
     runs-on: ubuntu-latest
-    
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     # 步骤 1：检出主仓库到默认位置
     - name: Checkout main repo
@@ -52,22 +53,35 @@ jobs:
         docker run -i --name psesp_action -v ${{ github.workspace }}/output:/output -v ${{ github.workspace }}/config.txt:/config.txt -v ${{ github.workspace }}/tmp_data/:/Srchost zerofo/builder_esp:web_p > log
         
         docker logs psesp_action
-    - name: Get file list
-      id: files
-      run: |
-        find output -type f | jq -R -s 'split("\n") | map(select(. != ""))' > files.json
-        echo "files=$(cat files.json)" >> $GITHUB_OUTPUT
+    - name: Upload output directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: output-files
+          path: output
           
-    - name: Set matrix
-      id: set-matrix
-      run: |
-        echo "matrix={\"file\":${{ steps.files.outputs.files }}}" >> $GITHUB_OUTPUT
-        
-    - name: Upload each file
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ steps.file_upload.outputs.artifact_name }}
-        path: output/${{ steps.file_upload.outputs.artifact_name }}
+      - name: Get file list with basenames
+        id: files
+        run: |
+          # 创建一个包含文件路径和文件名的JSON数组
+          arr=()
+          find output -type f | while IFS= read -r file; do
+            filename=$(basename "$file")
+            arr+=("{\"file_path\":\"$file\",\"file_name\":\"$filename\"}")
+          done
+          
+          # 转换为JSON数组
+          json_array="["
+          for obj in "${arr[@]}"; do
+            json_array+="$obj,"
+          done
+          json_array="${json_array%,}]"
+          
+          echo "file_list=$json_array" >> $GITHUB_OUTPUT
+          
+      - name: Set matrix
+        id: set-matrix
+        run: |
+          echo "matrix=${{ steps.files.outputs.file_list }}" >> $GITHUB_OUTPUT
   upload:
     needs: container-process
     runs-on: ubuntu-latest
@@ -83,5 +97,5 @@ jobs:
       - name: Upload single file
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.file | basename }}
-          path: ${{ matrix.file }}
+          name: ${{ matrix.file_name }}
+          path: ${{ matrix.file_path }}
