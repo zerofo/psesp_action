@@ -67,7 +67,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.file_upload.outputs.artifact_name }}
-        path: dist/${{ steps.file_upload.outputs.artifact_name }}
+        path: output/${{ steps.file_upload.outputs.artifact_name }}
       # 步骤 5：上传处理结果
     # - name: Upload artifacts
     #   uses: actions/upload-artifact@v4
