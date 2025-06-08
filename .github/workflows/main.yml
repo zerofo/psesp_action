@@ -54,26 +54,18 @@ jobs:
         docker logs psesp_action
     - name: Upload individual artifacts
       run: |
-        for file in output/*.zip; do
-          filename=$(basename $file)
-          echo "Uploading $filename as separate artifact"
-          # 调用 upload-artifact 动作上传单个文件
-          echo "::set-output name=artifact_name::$filename" >> $GITHUB_OUTPUT
+        cd output
+        for file in *; do
+          artifact_name="${file}"
+          echo "Uploading $artifact_name"
+          gh_artifact_name=$(echo "$artifact_name" | tr '/' '-')
+          echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
         done
       id: file_upload
       shell: bash
-
-    - name: Confirm upload
+        
+    - name: Upload each file
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.file_upload.outputs.artifact_name }}
         path: output/${{ steps.file_upload.outputs.artifact_name }}
-      # 步骤 5：上传处理结果
-    # - name: Upload artifacts
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: esp_output
-    #     path: |
-    #       output/*.zip
-    #       !output/*.tmp  # 排除临时文件
-    #     retention-days: 3
