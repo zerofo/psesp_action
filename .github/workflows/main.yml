@@ -15,9 +15,9 @@ jobs:
     - name: Checkout secondary repo
       uses: actions/checkout@v4
       with:
-        repository: zerofo/zerofo.github.io  # 目标仓库的完整名称
+        repository: ${{ secrets.REPO }}  # 目标仓库的完整名称
         path: tmp              # 指定检出到 tmp_data 目录
-      # token: ${{ secrets.ACCESS_TOKEN }}  # 需要仓库访问权限的 token
+        token: ${{ secrets.ACCESS_TOKEN }}  # 需要仓库访问权限的 token
     - name: zip download
       id: getzip
       run: |
