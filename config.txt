@@ -1,5 +1,5 @@
 # WIFI名称;
-WIFISSID="ps4_672_zerofo"; 
+WIFISSID="ps4_7x-9x_zerofo"; 
 
 # WIFI密码;
 WIFIPass="";
@@ -12,7 +12,7 @@ Devs="8266 8266sd esp32-s2 esp32-c6 esp32-s3 esp32-old";
 IP="9.9.9.9"; 
 
 # 输出文件名, 不能有空格;
-binname="ps4_672_zerofo"; 
+binname="ps4_7x-9x_zerofo"; 
 
 # 是否压缩;
 compress="y";
@@ -42,7 +42,7 @@ clientNUM=1
 hideSSID=0
 
 #WIFI信号的信道
-channel=4
+channel=1
 
 #WIFI配置页面  目前默认 IP/.zerofo_espcfg
 WIFIcfg="y";
